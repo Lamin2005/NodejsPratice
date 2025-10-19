@@ -1,65 +1,81 @@
 import express from "express";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
+import userRouter from './routes/userRoutes.js';
+import productRouter from './routes/productRoutes.js'; 
 
 const app = express();
 app.use(express.json());
 const port = 3000;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const users = [
-  {
-    id: "1",
-    name: "MgMg",
-    age: 16,
-    salary: 100000,
-  },
+app.use("/users", userRouter);
+app.use("/products", productRouter);
 
-  {
-    id: "2",
-    name: "MaMa",
-    age: 18,
-    salary: 300000,
-  },
 
-  {
-    id: "3",
-    name: "MyoKyaw",
-    age: 26,
-    salary: 120000,
-  },
-
-  {
-    id: "4",
-    name: "MyaMya",
-    age: 15,
-    salary: 50000,
-  },
-
-  {
-    id: "5",
-    name: "UAung",
-    age: 36,
-    salary: 130000,
-  },
-];
 
 app.listen(port, () => {
   console.log("Server is Running at port 3000...");
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+app
+  .route("/products")
+  .get((req, res) => {
+    res.json({ con: true, message: "Success", result: products });
+  })
+  .post((req, res) => {
+    const newProduct = req.body;
+    products.push(newProduct);
+    res.json({ con: true, message: "Success", result: products });
+  })
+  .patch((req, res, next) => {
+    const id = req.body.id;
+    const name = req.body.name;
+    const product = products.find((p) => p.id == id);
+    if (product) {
+      product.name = name;
+      res.json({ con: true, message: "Success", result: products });
+    } else {
+      next(new Error("No found User!"));
+    }
+  })
+  .delete((req, res) => {
+    const id = req.body.id;
+    const product = products.find(p => p.id == id);
+    if (product) {
+      const newlist = products.filter((p) => p.id !== id);
+      res.json({ con: true, message: "Success", result: newlist });
+    }
+  });
 
 app.get("/", (req, res) => {
   console.clear();
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
+
+
 app.get("/users/:name/:age", (req, res, next) => {
   console.clear();
   const name = req.params.name;
   const age = req.params.age;
-  const filter = users.filter((data) => data.name == name || data.age == age);
+  users = users.filter((data) => data.name == name || data.age == age);
   if (filter) {
-    res.json({ con: true, message: "success", result: filter });
+    res.json({ con: true, message: "success", result: users });
   } else {
     next(new Error("Error user not found!"));
   }
@@ -98,10 +114,9 @@ app.patch("/users", (req, res, next) => {
   }
 });
 
-
 app.delete("/users/:id", (req, res, next) => {
   const id = req.params.id;
-  const found = users.some((data) => data.id == id); 
+  const found = users.some((data) => data.id == id);
 
   if (found) {
     let filtered = users.filter((data) => data.id != id);
@@ -110,3 +125,4 @@ app.delete("/users/:id", (req, res, next) => {
     next(new Error("Error user not found!"));
   }
 });
+*/
