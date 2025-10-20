@@ -1,76 +1,16 @@
 import express from "express";
+import { all, add, modify, cancle } from "../controller/usercontroller.js";
 const router = express.Router();
 
-// Sample users data
-const users = [
-  {
-    id: "1",
-    name: "MgMg",
-    age: 16,
-    salary: 100000,
-  },
+router.get("/:name/:age", all);
 
-  {
-    id: "2",
-    name: "MaMa",
-    age: 18,
-    salary: 300000,
-  },
+router.post("/", add);
 
-  {
-    id: "3",
-    name: "MyoKyaw",
-    age: 26,
-    salary: 120000,
-  },
+router.patch("/:id/:age", modify);
 
-  {
-    id: "4",
-    name: "MyaMya",
-    age: 15,
-    salary: 50000,
-  },
+router.delete("/:id", cancle);
 
-  {
-    id: "5",
-    name: "UAung",
-    age: 36,
-    salary: 130000,
-  },
-];
-
-router.get("/:name/:age", (req, res, next) => {
-  console.clear();
-  const name = req.params.name;
-  const age = req.params.age;
-  const filteredUsers = users.filter((data) => data.name == name || data.age == age);
-  if (users.length) {
-    res.json({ con: true, message: "success", result: filteredUsers });
-  } else {
-    next(new Error("Error user not found!"));
-  }
-});
-
-router.post("/", (req, res) => {
-  console.clear();
-  const bodydata = req.body;
-  users.push(bodydata);
-  res.json({ con: true, message: "success", result: users });
-});
-
-router.patch("/:id/:age", (req, res, next) => {
-  const id = req.params.id;
-  const age = req.params.age;
-  const result = users.find((data) => data.id == id);
-
-  if (result) {
-    result.age = Number(age);
-    res.json({ con: true, message: "success", result: users });
-  } else {
-    next(new Error("Error user not found!"));
-  }
-});
-
+/*
 router.patch("/", (req, res, next) => {
   const id = req.body.id;
   const salary = req.body.salary;
@@ -83,17 +23,6 @@ router.patch("/", (req, res, next) => {
     next(new Error("Error user not found!"));
   }
 });
-
-router.delete("/:id", (req, res, next) => {
-  const id = req.params.id;
-  const found = users.some((data) => data.id == id);
-
-  if (found) {
-    let filtered = users.filter((data) => data.id != id);
-    res.json({ con: true, message: "success", result: filtered });
-  } else {
-    next(new Error("Error user not found!"));
-  }
-});
+*/
 
 export default router;
