@@ -1,8 +1,9 @@
 import express from "express";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
-import userRouter from './routes/userRoutes.js';
-import productRouter from './routes/productRoutes.js'; 
+import userRouter from "./routes/userRoutes.js";
+import productRouter from "./routes/productRoutes.js";
+import { connectDB } from "./database/db.js";
 
 const app = express();
 app.use(express.json());
@@ -12,24 +13,15 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use("/users", userRouter);
 app.use("/products", productRouter);
 
-
-
-app.listen(port, () => {
-  console.log("Server is Running at port 3000...");
+connectDB((err) => {
+  if (!err) {
+    app.listen(port, () => {
+      console.log("Server is Running at port 3000...");
+    });
+  } else {
+    console.log("Error");
+  }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*
 app
