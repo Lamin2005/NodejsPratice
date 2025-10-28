@@ -14,6 +14,6 @@ const connectDB = (cb) => {
     })
 }
 
-const getConn = () => conn;
+const getConn = () =>  conn;
 
 export {getConn,connectDB};

@@ -2,13 +2,13 @@ import express from "express";
 import { all, add, modify, cancle } from "../controller/usercontroller.js";
 const router = express.Router();
 
-router.get("/:name/:age", all);
+router.get("/", all);
 
 router.post("/", add);
 
-router.patch("/:id/:age", modify);
+router.patch("/:age", modify);
 
-router.delete("/:id", cancle);
+router.delete("/:age", cancle);
 
 /*
 router.patch("/", (req, res, next) => {

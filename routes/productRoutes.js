@@ -6,7 +6,7 @@ router.get("/", all);
 
 router.post("/", add);
 
-router.patch("/:id", modify);
+router.patch("/:price", modify);
 
 router.delete("/:id", cancle);
 

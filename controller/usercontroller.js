@@ -1,84 +1,90 @@
-const users = [
-  {
-    id: "1",
-    name: "MgMg",
-    age: 16,
-    salary: 100000,
-  },
+import { getConn } from "../database/db.js";
+import { ObjectId } from "mongodb";
 
-  {
-    id: "2",
-    name: "MaMa",
-    age: 18,
-    salary: 300000,
-  },
+const all = (req, res) => {
+  let users = [];
+  const db = getConn();
 
-  {
-    id: "3",
-    name: "MyoKyaw",
-    age: 26,
-    salary: 120000,
-  },
-
-  {
-    id: "4",
-    name: "MyaMya",
-    age: 15,
-    salary: 50000,
-  },
-
-  {
-    id: "5",
-    name: "UAung",
-    age: 36,
-    salary: 130000,
-  },
-];
-
-const all = (req, res, next) => {
-  console.clear();
-  const name = req.params.name;
-  const age = req.params.age;
-  const filteredUsers = users.filter(
-    (data) => data.name == name || data.age == age
-  );
-  if (users.length) {
-    res.json({ con: true, message: "success", result: filteredUsers });
-  } else {
-    next(new Error("Error user not found!"));
+  if (!db) {
+    return res
+      .status(503)
+      .json({ con: false, mes: "Database not connected", result: [] });
   }
+  db.collection("users")
+    .find()
+    .project({name:1,_id:0})
+    .forEach((user) => users.push(user))
+    .then(() => {
+      console.log("Users : ", users);
+      res
+        .status(200)
+        .json({ con: true, mes: "Get User success", result: users });
+    })
+    .catch((err) => {
+      console.log("Error is ", err);
+      res.status(500).json({ con: false, mes: "Get User fail", result: [] });
+    });
 };
 
 const add = (req, res) => {
-  console.clear();
-  const bodydata = req.body;
-  users.push(bodydata);
-  res.json({ con: true, message: "success", result: users });
-};
+  let obj = req.body;
+  const db = getConn();
 
-const modify = (req, res, next) => {
-  const id = req.params.id;
-  const age = req.params.age;
-  const result = users.find((data) => data.id == id);
-
-  if (result) {
-    result.age = Number(age);
-    res.json({ con: true, message: "success", result: users });
-  } else {
-    next(new Error("Error user not found!"));
+  if (!db) {
+    return res
+      .status(503)
+      .json({ con: false, mes: "Database not connected", result: [] });
   }
+  db.collection("users")
+    .insertOne(obj)
+    .then(() => {
+      console.log("New Users Created : ", obj);
+      res.status(201).json({ con: true, mes: "User created success" });
+    })
+    .catch((err) => {
+      console.log("Error is ", err);
+      res.status(500).json({ con: false, mes: "User created fail" });
+    });
 };
 
-const cancle = (req, res, next) => {
-  const id = req.params.id;
-  const found = users.some((data) => data.id == id);
+const modify = (req, res) => {
+  let ages = Number(req.params.age);
+  let name = req.body;
+  const db = getConn();
 
-  if (found) {
-    let filtered = users.filter((data) => data.id != id);
-    res.json({ con: true, message: "success", result: filtered });
-  } else {
-    next(new Error("Error user not found!"));
+  if (!db) {
+    return res
+      .status(503)
+      .json({ con: false, mes: "Database not connected", result: [] });
   }
+  db.collection("users")
+    .updateMany({ age:ages }, { $set: name })
+    .then(() => {
+      res.json({ con: true, mes: "User Update success" });
+    })
+    .catch((err) => {
+      res.json({ con: false, mes: "User Update fail" });
+    });
 };
 
-export  { all, add, modify, cancle };
+const cancle = (req, res) => {
+  let ages = Number(req.params.age);
+  const db = getConn();
+
+  if (!db) {
+    return res
+      .status(503)
+      .json({ con: false, mes: "Database not connected", result: [] });
+  }
+  db.collection("users")
+    .deleteMany({ age : ages })
+    .then(() => {
+      res.json({ con: true, mes: "User Delete success" });
+    })
+    .catch((err) => {
+      res.json({ con: false, mes: "User Delete fail" });
+    });
+};
+
+
+export { all, add, modify, cancle };
