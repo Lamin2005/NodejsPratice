@@ -56,9 +56,9 @@ const add = (req, res) => {
 };
 
 const modify = (req, res) => {
-  const price = Number(req.params.price);
+  const typepara = req.params.type;
   //const id = ObjectId.createFromHexString(req.params.id);
-  const obj = req.body;
+  //const obj = req.body;
 
   const db = getConn();
 
@@ -69,7 +69,7 @@ const modify = (req, res) => {
   }
 
   db.collection("products")
-    .updateMany({ price: { $eq: price } }, {$currentDate : { created : true} })
+    .updateMany({ type: typepara }, { $currentDate: { created: true } })
     .then(() => {
       res.json({
         con: true,
@@ -107,4 +107,64 @@ const cancle = (req, res) => {
     });
 };
 
-export { all, add, modify, cancle };
+//aggregation
+
+const aggre = (req, res) => {
+  const db = getConn();
+  let products = [];
+
+  if (!db) {
+    return res
+      .status(503)
+      .json({ con: false, mes: "Database not connected", result: [] });
+  }
+
+  db.collection("products")
+    .aggregate([
+      { $match: { range: { $gte: 10 } } },
+      {
+        $project: {
+          name: 1,
+          price: 1,
+          _id: 0,
+          range : 1,
+          total: { $multiply: ["$price", "$range"] },
+
+        },
+      },
+      {
+        $sort : { range : 1}
+      },
+      {
+        $skip : 3
+      },
+      {
+        $limit : 3
+      }
+
+      // {
+      //   $group: {
+      //     _id: "$type",
+      //     count: { $sum: 1 },
+      //     total: { $sum: "$price" },
+      //     avragePrice: { $avg: "$price" },
+      //     minPrice: { $min: "$price" },
+      //     maxPrice : {$max : "$price"}
+      //   },
+      // },
+    ])
+    .forEach((p) => products.push(p))
+    .then(() => {
+      res.json({
+        con: true,
+        mes: "Aggregate Products success",
+        result: products,
+      });
+    })
+    .catch((err) => {
+      console.log("Error is ", err);
+      res.json({ con: false, mes: "Aggregrate Products fail" });
+    });
+};
+
+export { all, add, modify, cancle, aggre };
